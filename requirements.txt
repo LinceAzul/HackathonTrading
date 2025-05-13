@@ -1,2 +1,6 @@
 pandas
 numpy
+requests
+pandas_ta 
+binance
+flask
