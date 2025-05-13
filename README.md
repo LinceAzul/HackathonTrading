@@ -1,26 +1,43 @@
 # Trading Bot Algorítmico - Proyecto de Portafolio
 
-Este proyecto implementa un bot de trading algorítmico en Python diseñado para competiciones de portafolios. El objetivo es crear estrategias que maximicen el rendimiento financiero mientras mantienen un control adecuado de riesgos.
+## Introducción
+
+Este proyecto implementa un bot de trading algorítmico en Python diseñado para competiciones de portafolios financieros. El trading algorítmico utiliza programas informáticos para ejecutar operaciones de compra y venta de activos financieros siguiendo reglas predefinidas basadas en análisis técnico, fundamental o cuantitativo.
+
+La automatización del trading ofrece ventajas significativas:
+- **Eliminación del factor emocional**: Las decisiones se basan estrictamente en los parámetros programados
+- **Velocidad de ejecución**: Capacidad para procesar datos y ejecutar órdenes en milisegundos
+- **Backtesting**: Posibilidad de probar estrategias en datos históricos antes de usarlas con dinero real
+- **Operativa 24/7**: El bot puede monitorear mercados y operar sin interrupciones
+
+El objetivo principal de este proyecto es crear estrategias que maximicen el rendimiento financiero mientras mantienen un control adecuado de riesgos, aplicando principios sólidos de gestión monetaria y análisis sistemático.
 
 ## Métricas de Evaluación de Portafolio
 
-Un portafolio de alto rendimiento se evalúa mediante las siguientes métricas clave:
+Un portafolio de alto rendimiento en competiciones de trading no se evalúa únicamente por sus ganancias, sino por el equilibrio entre rentabilidad y riesgo. A continuación se detallan las métricas más relevantes:
+
+### Métricas Principales
 
 | Métrica | Definición | Relevancia en competición |
 |---------|------------|---------------------------|
-| ROI (Rentabilidad) | % de ganancia/pérdida sobre el capital inicial | Métrica principal: indica cuánto ganó el portafolio |
-| Factor de ganancia | Ganancia bruta / Pérdida bruta | Eficiencia global: >1 es rentable, >2 excelente |
-| Win Rate | % de operaciones ganadoras | Consistencia de aciertos; combinada con ratio riesgo/recompensa |
-| Drawdown máximo | Caída porcentual máxima desde un pico | Mide riesgo: menor drawdown indica más estabilidad |
-| Ratio Sharpe | Retorno excedente dividido por volatilidad | Rendimiento ajustado al riesgo; alto valor = ganancias que justifican el riesgo |
+| **ROI (Rentabilidad)** | % de ganancia/pérdida sobre el capital inicial | Métrica principal: indica cuánto ganó el portafolio (ej. 15% significa un 15% de ganancia sobre lo invertido) |
+| **Factor de ganancia** | Ganancia bruta / Pérdida bruta | Eficiencia global: >1 es rentable, >2 excelente. Por ejemplo, factor 1.5 significa que por cada $1 perdido, se ganan $1.5 |
+| **Win Rate** | % de operaciones ganadoras | Consistencia de aciertos (ej. 60% significa que 6 de cada 10 trades fueron positivos) |
+| **Drawdown máximo** | Caída porcentual máxima desde un pico | Mide riesgo: menor drawdown indica más estabilidad. Ejemplo: Si comienzas con $1000, subes a $1200, luego caes a $900, el drawdown es -25% |
+| **Ratio Sharpe** | Retorno excedente dividido por volatilidad | Rendimiento ajustado al riesgo; >1 positivo, >2 excelente |
 
-Otras métricas consideradas:
-- **Ganancia Neta Absoluta**: Total ganado descontando costos
-- **Relación Riesgo-Recompensa**: Magnitud promedio de ganancias vs pérdidas
-- **Consistencia**: Crecimiento estable sin depender de operaciones singulares
-- **Riesgo de Ruina**: Probabilidad de perder todo el capital
+### Métricas Adicionales
+
+- **Ganancia Neta Absoluta**: Total ganado descontando costos (comisiones, etc.)
+- **Relación Riesgo-Recompensa**: Magnitud promedio de ganancias vs pérdidas por operación. Por ejemplo, si tu estrategia solo acierta 20% de las veces, necesitas que la ganancia de cada trade ganador sea ~5 veces la pérdida de un trade perdedor para ser rentable.
+- **Consistencia**: Curva de capital (equity curve) estable y ascendente, con ganancias logradas de forma constante sin depender de un solo trade afortunado.
+- **Riesgo de Ruina**: Probabilidad de perder todo el capital, vinculada a la gestión de riesgo mediante tamaños de posición adecuados y uso de stop-loss.
+
+En la práctica, el ranking en competiciones suele ordenarse por ganancia final (ROI), pero si dos equipos logran ganancias similares, métricas como drawdown o Sharpe podrían decantar al ganador. Una estrategia ganadora será la que haga crecer el capital de forma sostenible y segura durante el periodo de la competencia.
 
 ## Estructura del Proyecto
+
+La organización de archivos y carpetas sigue las mejores prácticas de desarrollo de software, facilitando la modularidad, el mantenimiento y la colaboración:
 
 ```
 trading-bot/
@@ -66,7 +83,20 @@ trading-bot/
     └── test_indicators.py    # Pruebas unitarias para indicadores
 ```
 
+### Detalles de los Componentes
+
+- **config/**: Almacena parámetros de estrategia y credenciales de APIs. Las claves API reales no deben subirse al repositorio por seguridad.
+- **data/**: Contiene datos de mercado para backtesting o análisis. Se separan datos crudos de los ya procesados para mantener organización.
+- **strategies/**: Contiene la lógica principal de trading. Cada estrategia se encapsula en su propio módulo para facilitar pruebas y reutilización.
+- **risk_management/**: Define reglas para dimensionar posiciones y limitar pérdidas, un componente crítico para la supervivencia del portafolio.
+- **utils/**: Funciones auxiliares que pueden usarse en múltiples partes del proyecto.
+- **backtesting/**: Herramientas para simular estrategias en datos históricos antes de usarlas en tiempo real.
+- **logs/**: Registros de operaciones, errores y eventos del sistema para depuración y análisis.
+- **tests/**: Pruebas automatizadas para verificar el correcto funcionamiento de componentes críticos.
+
 ## Configuración del Entorno Virtual
+
+Un entorno virtual permite aislar las dependencias del proyecto, facilitando la reproducibilidad y evitando conflictos con otros proyectos Python.
 
 ### En Windows
 
