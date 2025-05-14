@@ -2,10 +2,7 @@ import uuid
 import pandas as pd
 from src.strategies.base import StrategyInterface
 from src.strategies.default import DefaultStrategy
-from src.strategies.mean_reversion import MeanReversionStrategy
-from src.strategies.momentum import MomentumStrategy
-from src.strategies.enhanced import EnhancedStrategy
-from src.strategies.advanced import AdvancedStrategy
+from src.strategies.heuristic import HeuristicStrategy
 from src.utils.trader import Trader
 from src.utils.trader import Trader
 
@@ -92,11 +89,8 @@ if __name__ == "__main__":
         "token_1": BALANCE_TOKEN1,
         "token_2": BALANCE_TOKEN2,
     },
-    #DefaultStrategy()
-    # MeanReversionStrategy()
-    MomentumStrategy()
-    # EnhancedStrategy()
-    # AdvancedStrategy()
+    # DefaultStrategy()
+    HeuristicStrategy()
     )
 
     # Output the backtest result to a CSV file for submission

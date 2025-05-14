@@ -15,6 +15,9 @@ dependencies = [
     "pandas-ta",
     "binance",
     "flask",
+    "scikit-learn",
+    "torch",
+
 ]
 
 authors = [

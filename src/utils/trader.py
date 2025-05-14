@@ -163,5 +163,5 @@ class Trader:
         score = bonus_sharpe - penalty_dd - penalty_turn
         print(f"Score final: {score:.4f}")
 
-        return sharpe
+        return score
 
