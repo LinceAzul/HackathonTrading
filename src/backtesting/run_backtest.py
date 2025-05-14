@@ -2,7 +2,7 @@ import uuid
 import pandas as pd
 from src.strategies.base import StrategyInterface
 from src.strategies.default import DefaultStrategy
-from src.strategies.heuristic import HeuristicStrategy
+from src.strategies.momentum_vol import MomentumVolStrategy
 from src.utils.trader import Trader
 from src.utils.trader import Trader
 
@@ -90,7 +90,7 @@ if __name__ == "__main__":
         "token_2": BALANCE_TOKEN2,
     },
     # DefaultStrategy()
-    HeuristicStrategy()
+    MomentumVolStrategy()
     )
 
     # Output the backtest result to a CSV file for submission
