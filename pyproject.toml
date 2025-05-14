@@ -27,7 +27,7 @@ maintainers = [
     {name = "Iván Iroslavov Petkov", email = ""},
 ]
 
-requires-python = "<=3.13"
+requires-python = ">3.13"
 
 
 
