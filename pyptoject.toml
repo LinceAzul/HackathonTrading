@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+exclude = ["*.pyc", "*.log", ".git", "dist", "venv", "*__pycache__*", "*runs"]
+
+[project]
+name = "src"
+version = "0.1.0"
+dependencies = [
+    "pandas",
+    "numpy",
+    "requests",
+    "pandas-ta",
+    "binance",
+    "flask",
+]
+
+authors = [
+    {name = "Emilio Rodrigo Carreira Villalta", email = "emiliorodrigo.ecr@gmail.com"},
+    {name = "Iván Iroslavov Petkov", email = ""},
+]
+
+maintainers = [
+    {name = "Emilio Rodrigo Carreira Villalta", email = "emiliorodrigo.ecr@gmail.com"},
+    {name = "Iván Iroslavov Petkov", email = ""},
+]
+
+requires-python = "<=3.13"
+
+
+
