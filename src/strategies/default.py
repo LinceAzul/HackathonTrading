@@ -127,5 +127,3 @@ class DefaultStrategy(StrategyInterface):
                     orders.append({"pair": "token_1/token_2", "side": "sell", "qty": qty_token1})
         
         return orders
-
-strategy = DefaultStrategy()

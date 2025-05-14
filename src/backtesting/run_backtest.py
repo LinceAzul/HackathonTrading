@@ -4,6 +4,7 @@ from src.strategies.base import StrategyInterface
 from src.strategies.default import DefaultStrategy
 from src.strategies.mean_reversion import MeanReversionStrategy
 from src.strategies.momentum import MomentumStrategy
+from src.backtesting.score import calculate_score
 
 import json
 from pathlib import Path
@@ -94,3 +95,16 @@ if __name__ == "__main__":
 
     # Output the backtest result to a CSV file for submission
     result.to_csv(OUTPUT, index=False)
+
+    metrics = calculate_score(
+    trades=result,
+    price_data=combined_data,
+    initial_balances={
+        "fiat": BALANCE_FIAT,
+        "token_1": BALANCE_TOKEN1,
+        "token_2": BALANCE_TOKEN2,
+    },
+    fee_bps=FEE,
+    risk_free_rate=0.0
+    )
+    print(f"\nStrategy score: {metrics['score']:.4f}")
