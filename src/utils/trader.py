@@ -1,3 +1,6 @@
+import numpy as np
+import pandas as pd
+
 class Trader:
     """Trader supporting multiple trading pairs and currencies."""
 
@@ -124,3 +127,41 @@ class Trader:
         # Count successful trades
         if executed:
             self.trade_count += 1
+
+    def calculate_score(trader):
+        eq = pd.Series(trader.equity_history)
+        rets = eq.pct_change().dropna()
+
+        initial, final = eq.iloc[0], eq.iloc[-1]
+        absolute_pnl = final - initial
+        pct_pnl = absolute_pnl / initial * 100
+
+        # Evita dividir por cero
+        if rets.std() == 0:
+            sharpe = 0.0
+        else:
+            sharpe = rets.mean() / rets.std() * np.sqrt(252)
+
+        running_max = eq.cummax()
+        max_dd = ((eq - running_max) / running_max).min()
+
+        turnover = trader.turnover
+
+        # DEBUG: imprime antes de combinar
+        print(f"Sharpe: {sharpe:.4f}")
+        print(f"Max Drawdown: {max_dd:.4f}")
+        print(f"Turnover (USD): {turnover:,.0f}")
+
+        bonus_sharpe    = 0.7 * sharpe
+        penalty_dd      = 0.2 * abs(max_dd)
+        penalty_turn    = 0.1 * (turnover / 1_000_000)
+
+        print(f"Bonus Sharpe:       {bonus_sharpe:.4f}")
+        print(f"Penalty Drawdown:   {penalty_dd:.4f}")
+        print(f"Penalty Turnover:   {penalty_turn:.4f}")
+        print(f"→ Score:            {bonus_sharpe - penalty_dd - penalty_turn:.4f}")
+        score = bonus_sharpe - penalty_dd - penalty_turn
+        print(f"Score final: {score:.4f}")
+
+        return sharpe
+

@@ -5,6 +5,7 @@ from src.strategies.default import DefaultStrategy
 from src.strategies.mean_reversion import MeanReversionStrategy
 from src.strategies.momentum import MomentumStrategy
 from src.strategies.enhanced import EnhancedStrategy
+from src.strategies.advanced import AdvancedStrategy
 from src.utils.trader import Trader
 from src.utils.trader import Trader
 
@@ -67,6 +68,8 @@ def run_backtest(combined_data: pd.DataFrame, fee: float, balances: dict[str, fl
             order["id"] = str(uuid.uuid4())
             result = pd.concat([result, pd.DataFrame([order])], ignore_index=True)
     print(f"Trader balances is --> {trader.balances}")
+    score = trader.calculate_score()
+    print(f"\n\nTrader score is --> {score}")
     return result
 
 if __name__ == "__main__":
@@ -89,10 +92,11 @@ if __name__ == "__main__":
         "token_1": BALANCE_TOKEN1,
         "token_2": BALANCE_TOKEN2,
     },
-    # DefaultStrategy()
+    #DefaultStrategy()
     # MeanReversionStrategy()
-    # MomentumStrategy()
-    EnhancedStrategy()
+    MomentumStrategy()
+    # EnhancedStrategy()
+    # AdvancedStrategy()
     )
 
     # Output the backtest result to a CSV file for submission
