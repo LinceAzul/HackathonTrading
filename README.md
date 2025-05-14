@@ -40,15 +40,11 @@ En la práctica, el ranking en competiciones suele ordenarse por ganancia final 
 La organización de archivos y carpetas sigue las mejores prácticas de desarrollo de software, facilitando la modularidad, el mantenimiento y la colaboración:
 
 ```
-trading-bot/
-│
-├── README.md                 # Este archivo de documentación
-├── main.py                   # Script principal para ejecutar la estrategia en tiempo real
-├── requirements.txt          # Dependencias del proyecto
-│
-├── config/                   # Archivos de configuración
-│   ├── settings.py           # Configuraciones generales
-│   └── api_config_example.py # Plantilla para claves API (no incluye claves reales)
+pyproject.toml            # Dependencias del proyecto
+|
+README.md                 # Este archivo de documentación
+|
+src/
 │
 ├── data/                     # Datos financieros
 │   ├── raw/                  # Datos sin procesar
@@ -58,11 +54,6 @@ trading-bot/
 │   ├── __init__.py
 │   ├── mean_reversion.py     # Estrategia de reversión a la media
 │   └── trend_following.py    # Estrategia de seguimiento de tendencia
-│
-├── risk_management/          # Gestión de riesgos
-│   ├── __init__.py
-│   ├── position_sizing.py    # Cálculo del tamaño de posiciones
-│   └── stop_loss.py          # Lógica de stop-loss
 │
 ├── utils/                    # Utilidades comunes
 │   ├── __init__.py
@@ -74,13 +65,8 @@ trading-bot/
 │   ├── backtest_engine.py    # Motor de backtesting
 │   └── performance.py        # Cálculo de métricas de rendimiento
 │
-├── logs/                     # Archivos de registro
-│   └── trading.log           # Log principal de operaciones
-│
 └── tests/                    # Tests automatizados
     ├── __init__.py
-    ├── test_strategies.py    # Pruebas unitarias para estrategias
-    └── test_indicators.py    # Pruebas unitarias para indicadores
 ```
 
 ### Detalles de los Componentes
