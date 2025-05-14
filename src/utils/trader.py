@@ -134,9 +134,9 @@ class Trader:
 
         initial, final = eq.iloc[0], eq.iloc[-1]
         absolute_pnl = final - initial
-        pct_pnl = absolute_pnl / initial * 100
+        # pct_pnl = absolute_pnl / initial * 100
 
-        # Evita dividir por cero
+        # Avoid division by zero
         if rets.std() == 0:
             sharpe = 0.0
         else:
@@ -147,7 +147,7 @@ class Trader:
 
         turnover = trader.turnover
 
-        # DEBUG: imprime antes de combinar
+        # DEBUG: Print detailed information
         print(f"Sharpe: {sharpe:.4f}")
         print(f"Max Drawdown: {max_dd:.4f}")
         print(f"Turnover (USD): {turnover:,.0f}")

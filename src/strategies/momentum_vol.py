@@ -1,43 +1,44 @@
 import numpy as np
 from src.strategies.base import StrategyInterface
 
-SHORT_WINDOW = 40          # media corta un poco más lenta → menos cruces falsos
-LONG_WINDOW  = 120         # mantiene la proporción ≈1 : 3
-VOL_THRESHOLD = 0.02      # exige 1.2 % de CV → filtra sesiones planas
-QTY_T1 = 0.10              # el doble de tamaño por operación en token_1
+SHORT_WINDOW = 40          # short moving average, slower → fewer false crosses
+LONG_WINDOW  = 120         # keeps the ratio ≈1 : 3
+VOL_THRESHOLD = 0.02       # requires 1.2% of CV → filters flat sessions
+QTY_T1 = 0.10              # double the size per operation in token_1
 QTY_T2 = 0.20  
 
 class MomentumVolStrategy(StrategyInterface):
     """
-    Estrategia de momentum con filtro de volatilidad:
-      • Compra cuando la SMA corta cruza por encima de la SMA larga
-        y hay suficiente volatilidad.
-      • Vende todo cuando el cierre < SMA larga o la volatilidad cae.
-    Imprime todas las órdenes por pantalla.
+    Strategy that uses momentum and volatility to make trading decisions.
+    It calculates short and long moving averages, and uses the coefficient of
+    variation to determine the volatility of the price series.
+    It trades two tokens against fiat and each other, and uses a simple
+    strategy to decide when to buy or sell.
+    The strategy is designed to be used in a backtesting environment.
     """
 
     def __init__(self):
-        # Diccionarios para guardar series de precios por par
+        """Initialize strategy state."""
         self.prices = {pair: [] for pair in
                        ["token_1/fiat", "token_2/fiat", "token_1/token_2"]}
-        # Flags de posición abierta
+        # Price history for each pair - this maintains state between calls
         self.in_position = {"token_1": False, "token_2": False}
 
-    # ---------- utilidades internas ---------- #
+    # ---------- Inside utilities ---------- #
     @staticmethod
     def _sma(arr, w):
         return float(np.mean(arr[-w:]))
 
     @staticmethod
-    def _cv(arr):              # coeficiente de variación
+    def _cv(arr):              
         mu, sigma = np.mean(arr), np.std(arr)
         return sigma / mu if mu != 0 else 0.0
 
-    # ---------- método principal requerido ---------- #
+    # ---------- Main method ---------- #
     def on_data(self, market_data, balances):
         orders = []
 
-        # Actualizamos historiales de precios
+        # Update price history for each pair
         for pair, data in market_data.items():
             if pair in self.prices:
                 self.prices[pair].append(data["close"])
@@ -45,7 +46,7 @@ class MomentumVolStrategy(StrategyInterface):
                 if len(self.prices[pair]) > LONG_WINDOW:
                     self.prices[pair] = self.prices[pair][-LONG_WINDOW:]
 
-        # Esperar hasta tener LONG_WINDOW datos
+        # Wait until we have enough data points
         if any(len(p) < LONG_WINDOW for p in self.prices.values()):
             return orders
 
@@ -54,10 +55,10 @@ class MomentumVolStrategy(StrategyInterface):
         sma_s, sma_l = self._sma(p1, SHORT_WINDOW), self._sma(p1, LONG_WINDOW)
         cv1  = self._cv(p1)
 
-        # señal de compra
+        # Buy signal (entry)
         if (not self.in_position["token_1"]
             and sma_s > sma_l
-            and p1[-2] <= self._sma(p1[:-1], SHORT_WINDOW)   # cruce real
+            and p1[-2] <= self._sma(p1[:-1], SHORT_WINDOW)   # crossover
             and cv1 > VOL_THRESHOLD):
 
             qty = QTY_T1
@@ -67,7 +68,7 @@ class MomentumVolStrategy(StrategyInterface):
                 orders.append({"pair": "token_1/fiat", "side": "buy", "qty": qty})
                 self.in_position["token_1"] = True
 
-        # señal de venta (salida de posición)
+        # Sell signal (exit)
         elif (self.in_position["token_1"]
               and (p1[-1] < sma_l or cv1 <= VOL_THRESHOLD)):
 
@@ -102,8 +103,5 @@ class MomentumVolStrategy(StrategyInterface):
                 print(f"SELL {qty} token_2 at {p2[-1]:.2f} (cv={cv2:.3f})")
                 orders.append({"pair": "token_2/fiat", "side": "sell", "qty": qty})
             self.in_position["token_2"] = False
-
-        # (Opcional) — puedes conservar el bloque de arbitraje token_1/token_2
-        # de la DefaultStrategy si lo ves útil.
 
         return orders

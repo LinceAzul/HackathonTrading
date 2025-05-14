@@ -1,1 +1,0 @@
-## Script principal para ejecutar la estrategia en tiempo real

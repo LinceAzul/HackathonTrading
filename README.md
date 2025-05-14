@@ -1,156 +1,166 @@
-# Trading Bot Algorítmico - Proyecto de Portafolio
+# Algorithmic Trading Bot – Portfolio Project
 
-## Introducción
+## Introduction
 
-Este proyecto implementa un bot de trading algorítmico en Python diseñado para competiciones de portafolios financieros. El trading algorítmico utiliza programas informáticos para ejecutar operaciones de compra y venta de activos financieros siguiendo reglas predefinidas basadas en análisis técnico, fundamental o cuantitativo.
+This project implements an algorithmic trading bot in Python designed for financial portfolio competitions. Algorithmic trading uses computer programs to execute buy and sell orders of financial assets based on predefined rules, using technical, fundamental, or quantitative analysis.
 
-La automatización del trading ofrece ventajas significativas:
-- **Eliminación del factor emocional**: Las decisiones se basan estrictamente en los parámetros programados
-- **Velocidad de ejecución**: Capacidad para procesar datos y ejecutar órdenes en milisegundos
-- **Backtesting**: Posibilidad de probar estrategias en datos históricos antes de usarlas con dinero real
-- **Operativa 24/7**: El bot puede monitorear mercados y operar sin interrupciones
+Automating trading offers significant advantages:
 
-El objetivo principal de este proyecto es crear estrategias que maximicen el rendimiento financiero mientras mantienen un control adecuado de riesgos, aplicando principios sólidos de gestión monetaria y análisis sistemático.
+* **Removal of emotional factors**: Decisions are strictly based on programmed parameters
+* **Execution speed**: Ability to process data and execute orders in milliseconds
+* **Backtesting**: Ability to test strategies on historical data before using real money
+* **24/7 operation**: The bot can monitor markets and trade without interruptions
 
-## Métricas de Evaluación de Portafolio
+The main goal of this project is to create strategies that maximize financial returns while maintaining proper risk control, applying solid principles of money management and systematic analysis.
 
-Un portafolio de alto rendimiento en competiciones de trading no se evalúa únicamente por sus ganancias, sino por el equilibrio entre rentabilidad y riesgo. A continuación se detallan las métricas más relevantes:
+## Portfolio Evaluation Metrics
 
-### Métricas Principales
+A high-performing portfolio in trading competitions is not only judged by profits, but by the balance between return and risk. Below are the most relevant metrics:
 
-| Métrica | Definición | Relevancia en competición |
-|---------|------------|---------------------------|
-| **ROI (Rentabilidad)** | % de ganancia/pérdida sobre el capital inicial | Métrica principal: indica cuánto ganó el portafolio (ej. 15% significa un 15% de ganancia sobre lo invertido) |
-| **Factor de ganancia** | Ganancia bruta / Pérdida bruta | Eficiencia global: >1 es rentable, >2 excelente. Por ejemplo, factor 1.5 significa que por cada $1 perdido, se ganan $1.5 |
-| **Win Rate** | % de operaciones ganadoras | Consistencia de aciertos (ej. 60% significa que 6 de cada 10 trades fueron positivos) |
-| **Drawdown máximo** | Caída porcentual máxima desde un pico | Mide riesgo: menor drawdown indica más estabilidad. Ejemplo: Si comienzas con $1000, subes a $1200, luego caes a $900, el drawdown es -25% |
-| **Ratio Sharpe** | Retorno excedente dividido por volatilidad | Rendimiento ajustado al riesgo; >1 positivo, >2 excelente |
+### Main Metrics
 
-### Métricas Adicionales
+| Metric                         | Definition                            | Relevance in Competition                                                                                                                            |
+| ------------------------------ | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ROI (Return on Investment)** | % of profit/loss over initial capital | Main metric: shows how much the portfolio gained (e.g., 15% means a 15% return on the invested amount)                                              |
+| **Profit Factor**              | Gross profit / Gross loss             | Overall efficiency: >1 is profitable, >2 is excellent. For example, a factor of 1.5 means that for every \$1 lost, \$1.5 is earned                  |
+| **Win Rate**                   | % of winning trades                   | Consistency in success (e.g., 60% means 6 out of 10 trades were winners)                                                                            |
+| **Maximum Drawdown**           | Largest percentage drop from a peak   | Measures risk: lower drawdown indicates more stability. Example: If you start with \$1000, rise to \$1200, then drop to \$900, the drawdown is -25% |
+| **Sharpe Ratio**               | Excess return divided by volatility   | Risk-adjusted performance; >1 is good, >2 is excellent                                                                                              |
 
-- **Ganancia Neta Absoluta**: Total ganado descontando costos (comisiones, etc.)
-- **Relación Riesgo-Recompensa**: Magnitud promedio de ganancias vs pérdidas por operación. Por ejemplo, si tu estrategia solo acierta 20% de las veces, necesitas que la ganancia de cada trade ganador sea ~5 veces la pérdida de un trade perdedor para ser rentable.
-- **Consistencia**: Curva de capital (equity curve) estable y ascendente, con ganancias logradas de forma constante sin depender de un solo trade afortunado.
-- **Riesgo de Ruina**: Probabilidad de perder todo el capital, vinculada a la gestión de riesgo mediante tamaños de posición adecuados y uso de stop-loss.
+### Additional Metrics
 
-En la práctica, el ranking en competiciones suele ordenarse por ganancia final (ROI), pero si dos equipos logran ganancias similares, métricas como drawdown o Sharpe podrían decantar al ganador. Una estrategia ganadora será la que haga crecer el capital de forma sostenible y segura durante el periodo de la competencia.
+* **Net Absolute Profit**: Total profit after deducting costs (commissions, etc.)
+* **Risk-Reward Ratio**: Average magnitude of gains vs losses per trade. For instance, if your strategy only wins 20% of the time, each winning trade must return \~5x more than a losing one to be profitable.
+* **Consistency**: A stable, upward-sloping equity curve, with gains achieved consistently rather than relying on one lucky trade.
+* **Risk of Ruin**: Probability of losing all capital, tied to risk management through proper position sizing and use of stop-losses.
 
-## Estructura del Proyecto
+In practice, competition rankings are usually based on final profit (ROI), but if two teams achieve similar returns, metrics like drawdown or Sharpe ratio may determine the winner. A winning strategy is one that grows capital sustainably and safely over the competition period.
 
-La organización de archivos y carpetas sigue las mejores prácticas de desarrollo de software, facilitando la modularidad, el mantenimiento y la colaboración:
+## Project Structure
+
+The file and folder organization follows software development best practices, allowing for modularity, maintenance, and collaboration:
 
 ```
-pyproject.toml            # Dependencias del proyecto
+pyproject.toml            # Project dependencies
 |
-README.md                 # Este archivo de documentación
+README.md                 # This documentation file
 |
 src/
 │
-├── data/                     # Datos financieros
-│   ├── raw/                  # Datos sin procesar
-│   └── processed/            # Datos preprocesados
+├── data/                     # Financial data
+│   ├── raw/                  # Raw data
+│   └── processed/            # Preprocessed data
 │
-├── strategies/               # Módulos de estrategias de trading
+├── strategies/               # Trading strategy modules
 │   ├── __init__.py
-│   ├── mean_reversion.py     # Estrategia de reversión a la media
-│   └── trend_following.py    # Estrategia de seguimiento de tendencia
+│   ├── mean_reversion.py     # Mean reversion strategy
+│   └── trend_following.py    # Trend following strategy
 │
-├── utils/                    # Utilidades comunes
+├── utils/                    # Common utilities
 │   ├── __init__.py
-│   ├── data_fetcher.py       # Obtención de datos de API
-│   └── indicators.py         # Cálculo de indicadores técnicos
+│   ├── data_fetcher.py       # API data fetching
+│   └── indicators.py         # Technical indicator calculations
 │
-├── backtesting/              # Scripts para pruebas con datos históricos
+├── backtesting/              # Scripts for historical data testing
 │   ├── __init__.py
-│   ├── backtest_engine.py    # Motor de backtesting
-│   └── performance.py        # Cálculo de métricas de rendimiento
+│   ├── backtest_engine.py    # Backtesting engine
+│   └── performance.py        # Performance metrics calculation
 │
-└── tests/                    # Tests automatizados
+└── tests/                    # Automated tests
     ├── __init__.py
 ```
 
-### Detalles de los Componentes
+### Component Details
 
-- **config/**: Almacena parámetros de estrategia y credenciales de APIs. Las claves API reales no deben subirse al repositorio por seguridad.
-- **data/**: Contiene datos de mercado para backtesting o análisis. Se separan datos crudos de los ya procesados para mantener organización.
-- **strategies/**: Contiene la lógica principal de trading. Cada estrategia se encapsula en su propio módulo para facilitar pruebas y reutilización.
-- **risk_management/**: Define reglas para dimensionar posiciones y limitar pérdidas, un componente crítico para la supervivencia del portafolio.
-- **utils/**: Funciones auxiliares que pueden usarse en múltiples partes del proyecto.
-- **backtesting/**: Herramientas para simular estrategias en datos históricos antes de usarlas en tiempo real.
-- **logs/**: Registros de operaciones, errores y eventos del sistema para depuración y análisis.
-- **tests/**: Pruebas automatizadas para verificar el correcto funcionamiento de componentes críticos.
+* **config/**: Stores strategy parameters and API credentials. Real API keys should never be uploaded for security.
+* **data/**: Contains market data for backtesting or analysis. Raw and processed data are kept separate for organization.
+* **strategies/**: Holds the core trading logic. Each strategy is in its own module for easy testing and reuse.
+* **risk\_management/**: Defines rules for position sizing and loss limits—critical for portfolio survival.
+* **utils/**: Helper functions used across different parts of the project.
+* **backtesting/**: Tools to simulate strategies on historical data before using them in live trading.
+* **logs/**: Logs of trades, errors, and system events for debugging and analysis.
+* **tests/**: Automated tests to verify critical components work correctly.
 
-## Configuración del Entorno Virtual
+## Virtual Environment Setup
 
-Un entorno virtual permite aislar las dependencias del proyecto, facilitando la reproducibilidad y evitando conflictos con otros proyectos Python.
+A virtual environment isolates the project’s dependencies, helping with reproducibility and avoiding conflicts with other Python projects.
 
-### En Windows
+### On Windows
 
-1. Asegúrate de tener Python instalado (preferiblemente Python 3.8+)
-2. Abre el Símbolo del Sistema (cmd) o PowerShell
-3. Navega hasta la carpeta del proyecto:
+1. Make sure Python is installed (preferably Python 3.8+)
+2. Open Command Prompt or PowerShell
+3. Navigate to the project folder:
+
    ```
-   cd ruta\a\trading-bot
+   cd path\to\trading-bot
    ```
-4. Crea un entorno virtual:
+4. Create a virtual environment:
+
    ```
    python -m venv venv
    ```
-5. Activa el entorno virtual:
+5. Activate the virtual environment:
+
    ```
    venv\Scripts\activate
    ```
-6. Instala las dependencias:
+6. Install dependencies:
+
    ```
    pip install -r requirements.txt
    ```
 
-### En macOS/Linux
+### On macOS/Linux
 
-1. Asegúrate de tener Python instalado (preferiblemente Python 3.8+)
-2. Abre la Terminal
-3. Navega hasta la carpeta del proyecto:
+1. Make sure Python is installed (preferably Python 3.8+)
+2. Open the Terminal
+3. Navigate to the project folder:
+
    ```
-   cd ruta/a/trading-bot
+   cd path/to/trading-bot
    ```
-4. Crea un entorno virtual:
+4. Create a virtual environment:
+
    ```
    python3 -m venv venv
    ```
-5. Activa el entorno virtual:
+5. Activate the virtual environment:
+
    ```
    source venv/bin/activate
    ```
-6. Instala las dependencias:
+6. Install dependencies:
+
    ```
    pip install -r requirements.txt
    ```
 
-## Uso Básico
+## Basic Usage
 
-Para ejecutar el bot de trading:
+To run the trading bot:
 
-1. Configura tus claves API en el archivo `config/api_config.py` (crea este archivo basándote en `api_config_example.py`)
-2. Ejecuta:
+1. Set up your API keys in the file `config/api_config.py` (create this file based on `api_config_example.py`)
+2. Run:
+
    ```
    python main.py
    ```
 
-## Desarrollo de Estrategias
+## Strategy Development
 
-Para crear una nueva estrategia:
+To create a new strategy:
 
-1. Crea un nuevo archivo en la carpeta `strategies/`
-2. Implementa la lógica de trading
-3. Realiza pruebas de backtesting en `backtesting/`
-4. Integra la estrategia en el script principal
+1. Create a new file in the `strategies/` folder
+2. Implement your trading logic
+3. Perform backtesting in the `backtesting/` folder
+4. Integrate the strategy into the main script
 
-## Contribuciones
+## Contributing
 
-Para contribuir al proyecto:
+To contribute to the project:
 
-1. Haz fork del repositorio
-2. Crea una rama para tu funcionalidad (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit tus cambios (`git commit -m 'Añade nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Abre un Pull Request
+1. Fork the repository
+2. Create a new branch for your feature (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -m 'Add new feature'`)
+4. Push the branch (`git push origin feature/new-feature`)
+5. Open a Pull Request
