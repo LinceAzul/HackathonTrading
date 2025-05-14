@@ -4,14 +4,16 @@ from src.strategies.base import StrategyInterface
 from src.strategies.default import DefaultStrategy
 from src.strategies.mean_reversion import MeanReversionStrategy
 from src.strategies.momentum import MomentumStrategy
-from src.backtesting.score import calculate_score
+from src.strategies.enhanced import EnhancedStrategy
+from src.utils.trader import Trader
+from src.utils.trader import Trader
 
 import json
 from pathlib import Path
 
 from src.__init__ import DATA_PATH
 
-def run_backtest(combined_data: pd.DataFrame, fee: float, balances: dict[str, float], strategy: StrategyInterface) -> pd.DataFrame:
+def run_backtest(combined_data: pd.DataFrame, fee: float, balances: dict[str, float], strategy) -> pd.DataFrame:
     """Run a backtest with multiple trading pairs.
 
     Args:
@@ -19,9 +21,10 @@ def run_backtest(combined_data: pd.DataFrame, fee: float, balances: dict[str, fl
         combined_data: DataFrame containing market data for multiple pairs
         fee: Trading fee (in basis points, e.g., 2 = 0.02%)
         balances: Dictionary of {pair: amount} containing initial balances
-        strategy: StrategyInterface instance to use for trading decisions
     """
     # Record initial balances for display
+    trader = Trader(balances, fee)
+
     initial_balances = balances.copy()
 
     # Initialize prices with first data point for each pair
@@ -35,6 +38,7 @@ def run_backtest(combined_data: pd.DataFrame, fee: float, balances: dict[str, fl
     if "token_2/fiat" in first_prices and initial_balances["token_2"] > 0:
         initial_portfolio_value += initial_balances["token_2"] * first_prices["token_2/fiat"]
 
+    trader.equity_history = [initial_portfolio_value]
     # Combine all dataframes and sort by timestamp
     result = pd.DataFrame(
         columns=["id", "timestamp", "pair", "side", "qty"],
@@ -51,27 +55,25 @@ def run_backtest(combined_data: pd.DataFrame, fee: float, balances: dict[str, fl
             data_dict = row.to_dict()
             # Add fee information to market data so strategies can access it
             market_data[pair] = data_dict
+            trader.update_market(pair, data_dict)
         
         # Get strategy decision based on all available market data and current balances
         orders = strategy.on_data(market_data, balances)
 
         # Handle list of orders
         for order in orders:
+            trader.execute(order)
             order["timestamp"] = timestamp
             order["id"] = str(uuid.uuid4())
             result = pd.concat([result, pd.DataFrame([order])], ignore_index=True)
 
-    return result
+    score = trader.calculate_score()
+    return result, score
 
 if __name__ == "__main__":
-    hp = f"{DATA_PATH}/hyperparameters.json"
-    # hp = "/kaggle/input/crypto-trading-hackathon-2025/hyperparameters.json"
+    DATASET_PATH = str(DATA_PATH)
 
-    cd = f"{DATA_PATH}/test.csv"
-    # cd = f"{DATA_PATH}/dataset01/dataset01.csv"
-    # cd = "/kaggle/input/crypto-trading-hackathon-2025/test.csv"
-
-    with open(hp) as f:
+    with open(DATASET_PATH + "/hyperparameters.json") as f:
         HYPERPARAMETERS = json.load(f)
         
     FEE = HYPERPARAMETERS.get("fee", 3.0)
@@ -80,31 +82,17 @@ if __name__ == "__main__":
     BALANCE_TOKEN2 = HYPERPARAMETERS.get("token2_balance", 0.0)
     OUTPUT = "submission.csv"
 
-    combined_data = pd.read_csv(cd)
+    combined_data = pd.read_csv(DATASET_PATH + "/test.csv")
 
     # Run the backtest on the provided test data with a fee of 0.02% and initial balances of 10,000 fiat, and 0 token_1 and token_2
-    result = run_backtest(combined_data, FEE, {
+    result, score = run_backtest(combined_data, FEE, {
         "fiat": BALANCE_FIAT,
         "token_1": BALANCE_TOKEN1,
         "token_2": BALANCE_TOKEN2,
     },
-        DefaultStrategy(),
-        # MeanReversionStrategy(window=30, threshold=1.5),
-        # MomentumStrategy(lookback=20),
+    strategy = DefaultStrategy()
     )
 
     # Output the backtest result to a CSV file for submission
     result.to_csv(OUTPUT, index=False)
-
-    metrics = calculate_score(
-    trades=result,
-    price_data=combined_data,
-    initial_balances={
-        "fiat": BALANCE_FIAT,
-        "token_1": BALANCE_TOKEN1,
-        "token_2": BALANCE_TOKEN2,
-    },
-    fee_bps=FEE,
-    risk_free_rate=0.0
-    )
-    print(f"\nStrategy score: {metrics['score']:.4f}")
+    print(f"Score: {score}")

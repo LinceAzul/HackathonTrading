@@ -1,6 +1,7 @@
+from src.strategies.base import StrategyInterface
 import numpy as np
 import pandas as pd
-from src.strategies.base import StrategyInterface
+import json
 
 MOVING_AVERAGE_WINDOW = 25
 VOLATILITY_THRESHOLD = 2.1
@@ -15,7 +16,7 @@ class DefaultStrategy(StrategyInterface):
             "token_2/fiat": [],
             "token_1/token_2": []
         }
-
+        
         # Window size for moving averages
         self.window = MOVING_AVERAGE_WINDOW
         
@@ -33,7 +34,7 @@ class DefaultStrategy(StrategyInterface):
             Trading signal dict {pair, side, qty} or None
         """
         orders = []
-
+        
         # Update price history for each pair
         for pair, data in market_data.items():
             if pair in self.price_history:
@@ -65,14 +66,12 @@ class DefaultStrategy(StrategyInterface):
                 fee = market_data["fee"]
                 required_fiat = qty * price * (1 + fee)
                 if balances["fiat"] >= required_fiat:
-                    print(f"Buying {qty} token_1 with fiat at price {price}")
                     orders.append({"pair": "token_1/fiat", "side": "buy", "qty": qty})
             
             elif price > mu + self.threshold * sigma:
                 # Sell token_1 for fiat if we have enough token_1
                 qty = min(0.01, balances["token_1"])  # Adjust qty based on available balance
                 if qty > 0:
-                    print(f"Selling {qty} token_1 for fiat at price {price}")
                     orders.append({"pair": "token_1/fiat", "side": "sell", "qty": qty})
         
         # Check for trading opportunities in token_2/fiat
@@ -88,14 +87,12 @@ class DefaultStrategy(StrategyInterface):
                 fee = market_data["fee"]
                 required_fiat = qty * price * (1 + fee)
                 if balances["fiat"] >= required_fiat:
-                    print(f"Buying {qty} token_2 with fiat at price {price}")
                     orders.append({"pair": "token_2/fiat", "side": "buy", "qty": qty})
             
             elif price > mu + self.threshold * sigma:
                 # Sell token_2 for fiat if we have enough token_2
                 qty = min(0.1, balances["token_2"])  # Adjust qty based on available balance
                 if qty > 0:
-                    print(f"Selling {qty} token_2 for fiat at price {price}")
                     orders.append({"pair": "token_2/fiat", "side": "sell", "qty": qty})
         
         # Check for arbitrage opportunities with token_1/token_2
@@ -115,7 +112,6 @@ class DefaultStrategy(StrategyInterface):
                 fee = market_data["fee"]
                 required_token2 = qty_token1 * token1_token2_price * (1 + fee)
                 if balances["token_2"] >= required_token2:
-                    print(f"Buying {qty_token1} token_1 with token_2 at price {token1_token2_price}")
                     orders.append({"pair": "token_1/token_2", "side": "buy", "qty": qty_token1})
             
             # If actual token_1/token_2 price is significantly higher than implied
@@ -123,7 +119,6 @@ class DefaultStrategy(StrategyInterface):
                 # Sell token_1 for token_2 (if we have token_1)
                 qty_token1 = min(0.01, balances["token_1"])  # Adjust qty based on available balance
                 if qty_token1 > 0:
-                    print(f"Selling {qty_token1} token_1 for token_2 at price {token1_token2_price}")
                     orders.append({"pair": "token_1/token_2", "side": "sell", "qty": qty_token1})
         
         return orders
