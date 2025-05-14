@@ -13,7 +13,7 @@ from pathlib import Path
 
 from src.__init__ import DATA_PATH
 
-def run_backtest(combined_data: pd.DataFrame, fee: float, balances: dict[str, float], strategy) -> pd.DataFrame:
+def run_backtest(combined_data: pd.DataFrame, fee: float, balances: dict[str, float], strategy: StrategyInterface) -> pd.DataFrame:
     """Run a backtest with multiple trading pairs.
 
     Args:
@@ -66,9 +66,8 @@ def run_backtest(combined_data: pd.DataFrame, fee: float, balances: dict[str, fl
             order["timestamp"] = timestamp
             order["id"] = str(uuid.uuid4())
             result = pd.concat([result, pd.DataFrame([order])], ignore_index=True)
-
-    score = trader.calculate_score()
-    return result, score
+    print(f"Trader balances is --> {trader.balances}")
+    return result
 
 if __name__ == "__main__":
     DATASET_PATH = str(DATA_PATH)
@@ -76,7 +75,7 @@ if __name__ == "__main__":
     with open(DATASET_PATH + "/hyperparameters.json") as f:
         HYPERPARAMETERS = json.load(f)
         
-    FEE = HYPERPARAMETERS.get("fee", 3.0)
+    FEE = HYPERPARAMETERS.get("fee", 3.0) / 10000.0
     BALANCE_FIAT = HYPERPARAMETERS.get("fiat_balance", 10000.0)
     BALANCE_TOKEN1 = HYPERPARAMETERS.get("token1_balance", 0.0)
     BALANCE_TOKEN2 = HYPERPARAMETERS.get("token2_balance", 0.0)
@@ -85,14 +84,16 @@ if __name__ == "__main__":
     combined_data = pd.read_csv(DATASET_PATH + "/test.csv")
 
     # Run the backtest on the provided test data with a fee of 0.02% and initial balances of 10,000 fiat, and 0 token_1 and token_2
-    result, score = run_backtest(combined_data, FEE, {
+    result = run_backtest(combined_data, FEE, {
         "fiat": BALANCE_FIAT,
         "token_1": BALANCE_TOKEN1,
         "token_2": BALANCE_TOKEN2,
     },
-    strategy = DefaultStrategy()
+    # DefaultStrategy()
+    # MeanReversionStrategy()
+    # MomentumStrategy()
+    EnhancedStrategy()
     )
 
     # Output the backtest result to a CSV file for submission
     result.to_csv(OUTPUT, index=False)
-    print(f"Score: {score}")

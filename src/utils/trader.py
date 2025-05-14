@@ -1,6 +1,3 @@
-import numpy as np
-import pandas as pd
-
 class Trader:
     """Trader supporting multiple trading pairs and currencies."""
 
@@ -127,28 +124,3 @@ class Trader:
         # Count successful trades
         if executed:
             self.trade_count += 1
-
-    def calculate_score(self):
-        equity_series = pd.Series(self.equity_history)
-        returns = equity_series.pct_change().dropna()
-        initial = equity_series.iloc[0]
-        final = equity_series.iloc[-1]
-        
-        absolute_pnl = final - initial
-        pct_pnl = (absolute_pnl / initial) * 100
-        sharpe = (returns.mean() / returns.std()) * np.sqrt(252) if not returns.empty else 0
-        running_max = equity_series.cummax()
-        max_dd = ((equity_series - running_max) / running_max).min()
-        score = 0.7 * sharpe - 0.2 * abs(max_dd) - 0.1 * (self.turnover / 1_000_000)
-
-        return {
-            "Final Equity": final,
-            "Absolute PnL": absolute_pnl,
-            "Pct PnL": pct_pnl,
-            "Sharpe": sharpe,
-            "Max Drawdown": max_dd,
-            "Turnover": self.turnover,
-            "Fees Paid": self.total_fees_paid,
-            "Trade Count": self.trade_count,
-            "Score": score
-        }
