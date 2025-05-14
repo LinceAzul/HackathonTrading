@@ -1,8 +1,14 @@
 import uuid
 import pandas as pd
 from src.strategies.base import StrategyInterface
+from src.strategies.default import DefaultStrategy
+from src.strategies.mean_reversion import MeanReversionStrategy
+from src.strategies.momentum import MomentumStrategy
+
 import json
 from pathlib import Path
+
+from src.__init__ import DATA_PATH
 
 def run_backtest(combined_data: pd.DataFrame, fee: float, balances: dict[str, float], strategy: StrategyInterface) -> pd.DataFrame:
     """Run a backtest with multiple trading pairs.
@@ -12,6 +18,7 @@ def run_backtest(combined_data: pd.DataFrame, fee: float, balances: dict[str, fl
         combined_data: DataFrame containing market data for multiple pairs
         fee: Trading fee (in basis points, e.g., 2 = 0.02%)
         balances: Dictionary of {pair: amount} containing initial balances
+        strategy: StrategyInterface instance to use for trading decisions
     """
     # Record initial balances for display
     initial_balances = balances.copy()
@@ -55,24 +62,35 @@ def run_backtest(combined_data: pd.DataFrame, fee: float, balances: dict[str, fl
 
     return result
 
-DATA_PATH = Path("/kaggle/input")
+if __name__ == "__main__":
+    hp = f"{DATA_PATH}/hyperparameters.json"
+    # hp = "/kaggle/input/crypto-trading-hackathon-2025/hyperparameters.json"
 
-HYPERPARAMETERS = json.loads(list(DATA_PATH.glob("*/hyperparameters.json"))[0].read_text())
-FEE = HYPERPARAMETERS.get("fee", 3.0)
-BALANCE_FIAT = HYPERPARAMETERS.get("fiat_balance", 10000.0)
-BALANCE_TOKEN1 = HYPERPARAMETERS.get("token1_balance", 0.0)
-BALANCE_TOKEN2 = HYPERPARAMETERS.get("token2_balance", 0.0)
-INPUT = list(DATA_PATH.glob("*/test.csv"))[0]
-OUTPUT = "submission.csv"
+    cd = f"{DATA_PATH}/test.csv"
+    # cd = f"{DATA_PATH}/dataset01/dataset01.csv"
+    # cd = "/kaggle/input/crypto-trading-hackathon-2025/test.csv"
 
-combined_data = pd.read_csv(INPUT)
+    with open(hp) as f:
+        HYPERPARAMETERS = json.load(f)
+        
+    FEE = HYPERPARAMETERS.get("fee", 3.0)
+    BALANCE_FIAT = HYPERPARAMETERS.get("fiat_balance", 10000.0)
+    BALANCE_TOKEN1 = HYPERPARAMETERS.get("token1_balance", 0.0)
+    BALANCE_TOKEN2 = HYPERPARAMETERS.get("token2_balance", 0.0)
+    OUTPUT = "submission.csv"
 
-# Run the backtest on the provided test data with a fee of 0.02% and initial balances of 10,000 fiat, and 0 token_1 and token_2
-result = run_backtest(combined_data, FEE, {
-    "fiat": BALANCE_FIAT,
-    "token_1": BALANCE_TOKEN1,
-    "token_2": BALANCE_TOKEN2,
-})
+    combined_data = pd.read_csv(cd)
 
-# Output the backtest result to a CSV file for submission
-result.to_csv(OUTPUT, index=False)
+    # Run the backtest on the provided test data with a fee of 0.02% and initial balances of 10,000 fiat, and 0 token_1 and token_2
+    result = run_backtest(combined_data, FEE, {
+        "fiat": BALANCE_FIAT,
+        "token_1": BALANCE_TOKEN1,
+        "token_2": BALANCE_TOKEN2,
+    },
+        DefaultStrategy(),
+        # MeanReversionStrategy(window=30, threshold=1.5),
+        # MomentumStrategy(lookback=20),
+    )
+
+    # Output the backtest result to a CSV file for submission
+    result.to_csv(OUTPUT, index=False)
